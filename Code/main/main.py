@@ -24,7 +24,7 @@ def get_db():
 
 
 # Phương thức GET
-# 1. Tìm kiếm sản phẩm theo tên : ERRORRRRRRRRRRRRRRRR
+# 1. Tìm kiếm sản phẩm theo tên
 @app.get("/products/search", description = 'Search product details by name')
 def search_product(product_name: str = Query(default=None, max_length=40), db: Session = Depends(get_db)):
 
@@ -33,7 +33,7 @@ def search_product(product_name: str = Query(default=None, max_length=40), db: S
     return {"Quantity":names.size,"Name of products":names.tolist(), "Product details": result}
 
 # 2. Danh sách khách hàng đã mua sản phẩm theo ProductID : ERRORRRRRRRRRRRRRRRR
-@app.get("/products/customers/{product_id}", response_model=List[schema.Customer])
+@app.get("/product/customers/{product_id}", response_model=List[schema.Customer])
 def get_product_customers(product_id: int, db: Session = Depends(get_db)):
     # Sử dụng truy vấn SQL để lấy danh sách các khách hàng đã mua sản phẩm dựa trên mã sản phẩm
     query = f"""
@@ -43,13 +43,13 @@ def get_product_customers(product_id: int, db: Session = Depends(get_db)):
     INNER JOIN orderdetails OD ON O.OrderID = OD.OrderID
     WHERE OD.ProductID = {product_id}
     """
-    
     # Thực hiện truy vấn SQL và lấy kết quả
     result = pd.read_sql_query(query, db.connection())
-    print("Hello")
+    # Kiểm tra và xử lý dữ liệu trước khi trả về
+    result['Fax'] = result['Fax'].astype(str)
+    result['PostalCode'] = result['PostalCode'].astype(str)
     # Chuyển kết quả thành danh sách các bản ghi (records)
     records = result.to_dict(orient='records')
-    
     return records
 
 # 3. Lấy sản phẩm trong kho
@@ -84,13 +84,10 @@ def get_employee_invoices(employee_id: int, db: Session = Depends(get_db)):
     INNER JOIN orders O ON OD.OrderID = O.OrderID
     WHERE O.EmployeeID = {employee_id}
     """
-    
     # Thực hiện truy vấn SQL và lấy kết quả
     result = pd.read_sql_query(query, db.connection())
-    
     # Chuyển kết quả thành danh sách các bản ghi (records)
     records = result.to_dict(orient='records')
-    
     return records
 
 # 5. Đếm số lượng hóa đơn của 1 nhân viên
@@ -102,13 +99,10 @@ def get_employee_invoice_count(employee_id: int, db: Session = Depends(get_db)):
     FROM orders
     WHERE EmployeeID = {employee_id}
     """
-    
     # Thực hiện truy vấn SQL và lấy kết quả
     result = pd.read_sql_query(query, db.connection())
-    
     # Lấy số lượng hoá đơn từ kết quả truy vấn
     invoice_count = np.array([result["OrderID"]]).size
-    
     # Trả về kết quả dưới dạng JSON
     return {"employee_id": employee_id, "total_invoice": invoice_count}
 
@@ -295,14 +289,7 @@ async def upload_csv_products_file(file: UploadFile, db: Session = Depends(get_d
             csv_ReorderLevel = row['ReorderLevel']
             csv_Discontinued = row['Discontinued']
             exist_Product = db.query(model.Product).filter(model.Product.ProductName == csv_ProductName).first()
-                                                        #    model.Product.SupplierID == csv_SupplierID,
-                                                        #    model.Product.CategoryID == csv_CategoryID,
-                                                        #    model.Product.QuantityPerUnit == csv_QuantityPerUnit,
-                                                        #    model.Product.UnitPrice == csv_UnitPrice,
-                                                        #    model.Product.UnitsInStock == csv_UnitsInStock,
-                                                        #    model.Product.UnitsOnOrder == csv_UnitsOnOrder,
-                                                        #    model.Product.ReorderLevel == csv_ReorderLevel,
-                                                        #    model.Product.Discontinued == csv_Discontinued).
+
             if exist_Product is None:
                 product = model.Product(ProductName = csv_ProductName,
                                         SupplierID = csv_SupplierID,

@@ -119,9 +119,3 @@ class YearlyRevenue(BaseModel):
     YearlyRevenue: float
     # class Config:
     #     from_attributes = True
-
-
-
-
-
-    

@@ -19,7 +19,7 @@
 - Cài package *virtualenv* : **$ pip3 install virtualenv** 
 - Cài đặt môi trường ảo : **$ python3 -m venv env**
 - Lựa chọn version của python có **(env)**
-- Cài đặt các package đi kèm: **$ pip install -r [necessary_lib.txt](https://drive.google.com/uc?export=download&id=1WwZO7iybEZXwF7muaciTYd0yOIECJbhE)**
+- Cài đặt các package đi kèm: **$ pip install -r [envPython.txt](https://drive.google.com/uc?export=download&id=1WwZO7iybEZXwF7muaciTYd0yOIECJbhE)**
 ## Thực thi code
 - Đi tơi thư mục **Code** -> **Open terminal** -> **$ uvicorn main.main:app --reload**
 - Tại đây ấn vào link: http://127.0.0.1:8000
